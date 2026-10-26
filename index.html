@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HÓA HỌC 11 - ÔN TẬP KIỂM TRA GIỮA KÌ 1 (THPT PHẠM VĂN SÁNG)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hỗ trợ KaTeX hiển thị công thức hóa học và toán học chuẩn xác -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+        body { font-family: 'Montserrat', sans-serif; }
+        .pulse-glow { animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 min-h-screen text-white flex flex-col items-center justify-between p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl text-center my-4">
+        <div class="inline-block bg-blue-600 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2 shadow-lg">
+            Trò Chơi Học Tập - Hóa học 11
+        </div>
+        <h1 class="text-xl md:text-3xl font-extrabold bg-gradient-to-r from-teal-200 via-blue-200 to-purple-200 bg-clip-text text-transparent">
+            ÔN TẬP KIỂM TRA GIỮA KÌ 1 - HÓA HỌC 11 (THPT PHẠM VĂN SÁNG)
+        </h1>
+        <p class="text-slate-300 text-sm md:text-base mt-1">Cân bằng hóa học – Sự điện li & pH – Hợp chất Nitrogen & Sulfur</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8 my-auto relative overflow-hidden">
+
+        <!-- SETUP SCREEN -->
+        <div id="setup-screen" class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-teal-400 mb-2">Chọn Chế Độ Chơi</h2>
+                <p class="text-slate-300 text-sm">Tổng hợp các câu hỏi trọng tâm: Không giới hạn thời gian, có âm thanh phản hồi & giải thích chi tiết!</p>
+            </div>
+
+            <!-- Mode Selector Buttons -->
+            <div class="flex justify-center space-x-4">
+                <button id="btn-mode-group" onclick="setGameMode('group')" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-users"></i> <span>Đấu Đội / Nhiều Người</span>
+                </button>
+                <button id="btn-mode-single" onclick="setGameMode('single')" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-user-graduate"></i> <span>Kiểm Tra Cá Nhân (Đấu đơn)</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-4 max-w-md mx-auto">
+                <h3 id="setup-subtitle" class="text-center font-semibold text-teal-300 text-sm">Thiết lập thông tin các đội chơi</h3>
+                <div id="participant-inputs" class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</span>
+                        <input type="text" value="Đội 1" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</span>
+                        <input type="text" value="Đội 2" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                </div>
+
+                <div id="add-team-box" class="flex justify-center pt-2">
+                    <button onclick="addParticipantInput()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-xs transition flex items-center space-x-1">
+                        <i class="fa-solid fa-plus"></i> <span id="add-btn-text">Thêm đội</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="startGame()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg transform transition hover:scale-105">
+                    Bắt Đầu Ôn Tập Ngay!
+                </button>
+            </div>
+        </div>
+
+        <!-- GAMEPLAY SCREEN -->
+        <div id="game-screen" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-700">
+                <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                    <span id="turn-label" class="text-xs uppercase tracking-wider text-slate-400">Thí sinh:</span>
+                    <span id="current-participant-badge" class="bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-sm shadow">Bạn</span>
+                </div>
+                <div class="text-sm font-semibold text-teal-300">
+                    Câu hỏi <span id="current-q-num">1</span> / <span id="total-q-num">0</span>
+                </div>
+                <div class="flex items-center space-x-2 text-slate-400 font-medium text-xs sm:text-sm">
+                    <i class="fa-regular fa-clock text-teal-400"></i>
+                    <span>Tự do làm bài</span>
+                </div>
+            </div>
+
+            <div id="scoreboard-mini" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center"></div>
+
+            <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700 shadow-inner">
+                <div id="question-badge" class="inline-block text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-teal-800 text-teal-200 mb-2"></div>
+                <h3 id="question-text" class="text-lg md:text-xl font-bold text-white leading-relaxed"></h3>
+            </div>
+
+            <div id="options-container" class="space-y-4"></div>
+        </div>
+
+        <!-- FEEDBACK SCREEN -->
+        <div id="feedback-screen" class="hidden space-y-6 text-center py-4">
+            <div id="feedback-icon" class="text-6xl mb-2"></div>
+            <h3 id="feedback-title" class="text-2xl font-bold"></h3>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-left max-w-2xl mx-auto">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Hướng dẫn giải thích đáp án:</p>
+                <p id="feedback-rationale" class="text-slate-200 text-sm md:text-base"></p>
+            </div>
+            <div>
+                <button onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105">
+                    Tiếp Tục <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- END GAME SCREEN -->
+        <div id="end-screen" class="hidden space-y-6 text-center py-6">
+            <div class="text-6xl text-yellow-400 mb-2">
+                <i class="fa-solid fa-trophy animate-bounce"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">
+                KẾT QUẢ BÀI THI TỔNG HỢP
+            </h2>
+            <p id="end-subtitle" class="text-slate-300">Đã hoàn thành toàn bộ câu hỏi!</p>
+
+            <div id="final-scoreboard" class="max-w-md mx-auto space-y-3"></div>
+
+            <div class="pt-4">
+                <button onclick="restartGame()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105">
+                    Làm Lại Từ Đầu
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-4xl text-center text-xs text-slate-400 my-2">
+        Trò chơi học tập Hóa học 11 - Ôn tập Kiểm tra Giữa kì 1 (Trường THPT Phạm Văn Sáng)
+    </footer>
+
+    <script>
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playCorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99];
+                notes.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.1);
+                    gain.gain.setValueAtTime(0.18, now + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.1 + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + index * 0.1);
+                    osc.stop(now + index * 0.1 + 0.28);
+                });
+            } catch (e) {}
+        }
+
+        function playIncorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const freqs = [174.61, 138.59];
+                freqs.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.15);
+                    gain.gain.setValueAtTime(0.2, now + index * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.15 + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + index * 0.15);
+                    osc.stop(now + index * 0.15 + 0.25);
+                });
+            } catch (e) {}
+        }
+
+        function renderMath(container) {
+            if (window.renderMathInElement && container) {
+                renderMathInElement(container, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // BỘ CÂU HỎI TRỌNG TÂM TỪ BỘ 3 ĐỀ THPT PHẠM VĂN SÁNG
+        const originalQuestions = [
+            // ==================== ĐỀ SỐ 1 ====================
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 1 [Đề 1]: Xét cân bằng: C(s) + H₂O(g) ⇌ CO(g) + H₂(g). Biểu thức hằng số cân bằng Kc của hệ là:',
+                options: [
+                    { text: 'A. Kc = ([CO] · [H₂]) / [H₂O]', isCorrect: true },
+                    { text: 'B. Kc = ([CO] · [H₂]) / ([C] · [H₂O])', isCorrect: false },
+                    { text: 'C. Kc = [CO] · [H₂]', isCorrect: false },
+                    { text: 'D. Kc = ([CO] + [H₂]) / ([C] + [H₂O])', isCorrect: false }
+                ],
+                rationale: 'Vì C(s) là chất rắn nên nồng độ được coi là hằng số và không xuất hiện trong biểu thức Kc.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 2 [Đề 1]: Trạng thái cân bằng của phản ứng thuận nghịch là trạng thái mà tại đó:',
+                options: [
+                    { text: 'A. Phản ứng hóa học không xảy ra nữa.', isCorrect: false },
+                    { text: 'B. Tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch (v_t = v_n).', isCorrect: true },
+                    { text: 'C. Tốc độ phản ứng thuận nhỏ hơn tốc độ phản ứng nghịch.', isCorrect: false },
+                    { text: 'D. Nồng độ các chất phản ứng và sản phẩm bằng nhau.', isCorrect: false }
+                ],
+                rationale: 'Cân bằng hóa học là trạng thái động, tại đó tốc độ phản ứng thuận bằng tốc độ phản ứng nghịch.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 3 [Đề 1]: Hằng số cân bằng Kc của một phản ứng xác định chỉ phụ thuộc vào yếu tố nào?',
+                options: [
+                    { text: 'A. Nồng độ các chất.', isCorrect: false },
+                    { text: 'B. Nhiệt độ.', isCorrect: true },
+                    { text: 'C. Áp suất chung.', isCorrect: false },
+                    { text: 'D. Chất xúc tác.', isCorrect: false }
+                ],
+                rationale: 'Hằng số cân bằng Kc của một phản ứng chỉ phụ thuộc vào bản chất của phản ứng và nhiệt độ.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 4 [Đề 1]: Cho phản ứng: N₂(g) + 3H₂(g) ⇌ 2NH₃(g), ΔrH°₂₉₈ = -92 kJ. Yếu tố nào sau đây cần tác động để cân bằng chuyển dịch sang chiều thuận?',
+                options: [
+                    { text: 'A. Thêm chất xúc tác.', isCorrect: false },
+                    { text: 'B. Giảm nồng độ N₂ hoặc H₂.', isCorrect: false },
+                    { text: 'C. Tăng áp suất chung của hệ.', isCorrect: true },
+                    { text: 'D. Tăng nhiệt độ.', isCorrect: false }
+                ],
+                rationale: 'Phản ứng thuận làm giảm số mol khí (4 mol khí → 2 mol khí), nên khi tăng áp suất, cân bằng sẽ chuyển dịch theo chiều thuận.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 5 [Đề 1]: Trong phép chuẩn độ dung dịch iron(II) bằng dung dịch thuốc tím, thuốc tím từ burette được nhỏ xuống bình nào chứa dung dịch iron(II)?',
+                options: [
+                    { text: 'A. Bình định mức.', isCorrect: false },
+                    { text: 'B. Cốc thủy tinh.', isCorrect: false },
+                    { text: 'C. Bình tam giác (erlenmeyer flask).', isCorrect: true },
+                    { text: 'D. Ống đong.', isCorrect: false }
+                ],
+                rationale: 'Dung dịch cần chuẩn độ được cho vào bình tam giác để dễ dàng lắc đều khi nhỏ dung dịch chuẩn độ từ burette.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 6 [Đề 1]: Chất nào sau đây là chất điện li yếu?',
+                options: [
+                    { text: 'A. NaOH.', isCorrect: false },
+                    { text: 'B. CH₃COOH.', isCorrect: true },
+                    { text: 'C. Na₂CO₃.', isCorrect: false },
+                    { text: 'D. HCl.', isCorrect: false }
+                ],
+                rationale: 'CH₃COOH là acid hữu cơ yếu, trong dung dịch chỉ phân li một phần ra ion.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 7 [Đề 1]: Theo thuyết Brønsted – Lowry, H₂O đóng vai trò gì trong phản ứng: S²⁻ + H₂O ⇌ HS⁻ + OH⁻?',
+                options: [
+                    { text: 'A. Chất khử.', isCorrect: false },
+                    { text: 'B. Base.', isCorrect: false },
+                    { text: 'C. Acid.', isCorrect: true },
+                    { text: 'D. Chất oxi hóa.', isCorrect: false }
+                ],
+                rationale: 'H₂O nhường proton H⁺ cho ion S²⁻ nên H₂O đóng vai trò là acid.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 8 [Đề 1]: Các gói bánh snack thường được thổi phồng bằng khí trơ nào để chống ôi dầu và tăng thời gian bảo quản?',
+                options: [
+                    { text: 'A. O₂.', isCorrect: false },
+                    { text: 'B. N₂.', isCorrect: true },
+                    { text: 'C. NH₃.', isCorrect: false },
+                    { text: 'D. Cl₂.', isCorrect: false }
+                ],
+                rationale: 'Khí nitrogen (N₂) rất trơ ở nhiệt độ thường, không màu, không mùi, không độc, dùng để bảo quản thực phẩm.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 9 [Đề 1]: Dựa vào cấu tạo phân tử N₂, dự đoán về độ bền phân tử và khả năng phản ứng của nitrogen ở nhiệt độ thường:',
+                options: [
+                    { text: 'A. Kém bền và hoạt động hóa học mạnh.', isCorrect: false },
+                    { text: 'B. Bền vững và khá trơ về mặt hóa học.', isCorrect: true },
+                    { text: 'C. Bền vững và phản ứng mãnh liệt.', isCorrect: false },
+                    { text: 'D. Kém bền và trơ về mặt hóa học.', isCorrect: false }
+                ],
+                rationale: 'Phân tử N₂ có liên kết ba N≡N rất bền với năng lượng liên kết lớn (945 kJ/mol), do đó rất trơ ở nhiệt độ thường.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 10 [Đề 1]: Đun nóng NH₃ và HCl thấy xuất hiện khói trắng trong ống nghiệm. Khói trắng đó là:',
+                options: [
+                    { text: 'A. Hơi axit HCl.', isCorrect: false },
+                    { text: 'B. Khí NH₃.', isCorrect: false },
+                    { text: 'C. Tinh thể muối ammonium chloride (NH₄Cl).', isCorrect: true },
+                    { text: 'D. Khí clo Cl₂.', isCorrect: false }
+                ],
+                rationale: 'NH₃(g) + HCl(g) → NH₄Cl(s) (tạo thành các hạt tinh thể rắn màu trắng phân tán lơ lửng như khói).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 11 [Đề 1]: Phản ứng nào sau đây chứng minh ammonia đóng vai trò là một chất khử?',
+                options: [
+                    { text: 'A. NH₃ + H₂O ⇌ NH₄⁺ + OH⁻', isCorrect: false },
+                    { text: 'B. NH₃ + HCl → NH₄Cl', isCorrect: false },
+                    { text: 'C. 2NH₃ + 3CuO → N₂ + 3Cu + 3H₂O', isCorrect: true },
+                    { text: 'D. 2NH₃ + H₂SO₄ → (NH₄)₂SO₄', isCorrect: false }
+                ],
+                rationale: 'Số oxi hóa của nitrogen tăng từ -3 (trong NH₃) lên 0 (trong N₂), thể hiện tính khử.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 12 [Đề 1]: Hiện tượng phú dưỡng xảy ra ở ao hồ chủ yếu do sự dư thừa quá mức của các ion dinh dưỡng nào?',
+                options: [
+                    { text: 'A. Na⁺ và K⁺.', isCorrect: false },
+                    { text: 'B. Ca²⁺ và Mg²⁺.', isCorrect: false },
+                    { text: 'C. NO₃⁻ và PO₄³⁻.', isCorrect: true },
+                    { text: 'D. Cl⁻ và SO₄²⁻.', isCorrect: false }
+                ],
+                rationale: 'Dư thừa nitrate (NO₃⁻) và phosphate (PO₄³⁻) từ phân bón và chất thải sinh hoạt kích thích tảo phát triển bùng phát gây phú dưỡng.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 13 [Đề 1]: Mưa acid chủ yếu bắt nguồn từ khí thải công nghiệp chứa các khí nào sau đây?',
+                options: [
+                    { text: 'A. NO, CO, CO₂.', isCorrect: false },
+                    { text: 'B. CH₄, HCl, CO.', isCorrect: false },
+                    { text: 'C. Cl₂, CH₄, SO₂.', isCorrect: false },
+                    { text: 'D. SO₂, NO, NO₂.', isCorrect: true }
+                ],
+                rationale: 'SO₂ và các oxit nitơ (NO, NO₂) tan trong nước mưa tạo thành dung dịch axit H₂SO₄ và HNO₃ gây mưa acid.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 1: KTGK1 Hóa 11',
+                question: 'Câu 14 [Đề 1]: Khi cho kim loại tác dụng với dung dịch HNO₃ loãng hoặc đặc, sản phẩm khử KHÔNG THỂ là:',
+                options: [
+                    { text: 'A. N₂O₅.', isCorrect: true },
+                    { text: 'B. NH₄NO₃.', isCorrect: false },
+                    { text: 'C. NO₂.', isCorrect: false },
+                    { text: 'D. NO.', isCorrect: false }
+                ],
+                rationale: 'Sản phẩm khử phải có số oxi hóa nhỏ hơn +5. Trong N₂O₅, số oxi hóa của N vẫn là +5 nên không thể là sản phẩm khử.'
+            },
+
+            // ==================== ĐỀ SỐ 2 ====================
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 15 [Đề 2]: Phản ứng thuận nghịch là phản ứng:',
+                options: [
+                    { text: 'A. Trong cùng điều kiện, xảy ra đồng thời theo hai chiều trái ngược nhau.', isCorrect: true },
+                    { text: 'B. Có phương trình biểu diễn bằng mũi tên một chiều.', isCorrect: false },
+                    { text: 'C. Chỉ xảy ra theo một chiều xác định.', isCorrect: false },
+                    { text: 'D. Xảy ra hoàn toàn và giải phóng khí.', isCorrect: false }
+                ],
+                rationale: 'Phản ứng thuận nghịch là phản ứng trong cùng điều kiện xác định xảy ra đồng thời theo hai chiều trái ngược nhau.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 16 [Đề 2]: Cân bằng hoá học nào sau đây KHÔNG bị chuyển dịch khi thay đổi áp suất chung của hệ?',
+                options: [
+                    { text: 'A. 2SO₂(g) + O₂(g) ⇌ 2SO₃(g)', isCorrect: false },
+                    { text: 'B. C(s) + H₂O(g) ⇌ CO(g) + H₂(g)', isCorrect: false },
+                    { text: 'C. PCl₃(g) + Cl₂(g) ⇌ PCl₅(g)', isCorrect: false },
+                    { text: 'D. 3Fe(s) + 4H₂O(g) ⇌ Fe₃O₄(s) + 4H₂(g)', isCorrect: true }
+                ],
+                rationale: 'Ở phản ứng D, tổng số mol khí ở 2 vế bằng nhau (4 mol H₂O = 4 mol H₂), nên sự thay đổi áp suất không làm chuyển dịch cân bằng.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 17 [Đề 2]: Dung dịch muối ăn (NaCl) dẫn được điện là do:',
+                options: [
+                    { text: 'A. NaCl tan tốt trong nước.', isCorrect: false },
+                    { text: 'B. NaCl phân li hoàn toàn thành các ion Na⁺ và Cl⁻ chuyển động tự do.', isCorrect: true },
+                    { text: 'C. NaCl có vị mặn đặc trưng.', isCorrect: false },
+                    { text: 'D. Phân tử NaCl phân cực mạnh.', isCorrect: false }
+                ],
+                rationale: 'Tính dẫn điện của dung dịch chất điện li là nhờ sự chuyển động tự do của các ion dương và ion âm.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 18 [Đề 2]: Cho vài giọt dung dịch phenolphthalein vào dung dịch NH₃ loãng, hiện tượng quan sát được là:',
+                options: [
+                    { text: 'A. Dung dịch chuyển sang màu xanh lam.', isCorrect: false },
+                    { text: 'B. Dung dịch chuyển sang màu hồng.', isCorrect: true },
+                    { text: 'C. Xuất hiện kết tủa trắng.', isCorrect: false },
+                    { text: 'D. Dung dịch chuyển màu vàng cam.', isCorrect: false }
+                ],
+                rationale: 'Dung dịch NH₃ phân li tạo ion OH⁻ có môi trường base (pH > 7) làm phenolphthalein chuyển sang màu hồng.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 19 [Đề 2]: Trong phòng thí nghiệm, khí ammonia (NH₃) được thu vào bình bằng phương pháp nào?',
+                options: [
+                    { text: 'A. Đẩy không khí đặt ngửa bình.', isCorrect: false },
+                    { text: 'B. Đẩy không khí úp ngược bình.', isCorrect: true },
+                    { text: "C. Đẩy nước.", isCorrect: false },
+                    { text: 'D. Cả đẩy nước và úp ngược bình.', isCorrect: false }
+                ],
+                rationale: 'Khí NH₃ tan cực kì nhiều trong nước và nhẹ hơn không khí (M = 17 < 29) nên phải thu bằng cách đẩy không khí úp ngược bình.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 20 [Đề 2]: Muối (NH₄)₂CO₃ KHÔNG tạo kết tủa khi cho tác dụng với dung dịch nào sau đây?',
+                options: [
+                    { text: 'A. Ca(OH)₂.', isCorrect: false },
+                    { text: 'B. MgCl₂.', isCorrect: false },
+                    { text: 'C. FeSO₄.', isCorrect: false },
+                    { text: 'D. NaOH.', isCorrect: true }
+                ],
+                rationale: '(NH₄)₂CO₃ + 2NaOH → Na₂CO₃ + 2NH₃↑ + 2H₂O (chỉ tạo khí mùi khai, dung dịch đồng nhất không có kết tủa).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 2: KTGK1 Hóa 11',
+                question: 'Câu 21 [Đề 2]: Cho mẫu copper (Cu) vào dung dịch HNO₃ loãng, hiện tượng quan sát được là:',
+                options: [
+                    { text: 'A. Dung dịch màu xanh lam, có khí H₂ bay ra.', isCorrect: false },
+                    { text: 'B. Dung dịch màu xanh lam, có khí không màu bay ra và hóa nâu đỏ ngoài không khí.', isCorrect: true },
+                    { text: 'C. Dung dịch không màu, sủi bọt khí nâu đỏ.', isCorrect: false },
+                    { text: 'D. Không có phản ứng hóa học xảy ra.', isCorrect: false }
+                ],
+                rationale: '3Cu + 8HNO₃ → 3Cu(NO₃)₂ (xanh) + 2NO↑ (không màu) + 4H₂O. Khí NO gặp oxi không khí hóa nâu: 2NO + O₂ → 2NO₂ (nâu đỏ).'
+            },
+
+            // ==================== ĐỀ SỐ 3 ====================
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 3: KTGK1 Hóa 11',
+                question: 'Câu 22 [Đề 3]: Dung dịch muối nào sau đây có môi trường acid (pH < 7)?',
+                options: [
+                    { text: 'A. FeCl₃.', isCorrect: true },
+                    { text: 'B. KCl.', isCorrect: false },
+                    { text: 'C. Na₂CO₃.', isCorrect: false },
+                    { text: 'D. Na₂SO₄.', isCorrect: false }
+                ],
+                rationale: 'Cation kim loại Fe³⁺ bị thủy phân trong nước tạo ion H⁺: Fe³⁺ + H₂O ⇌ Fe(OH)²⁺ + H⁺ làm dung dịch có pH < 7.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 3: KTGK1 Hóa 11',
+                question: 'Câu 23 [Đề 3]: Số oxi hóa và cộng hóa trị của nguyên tử nitrogen trong phân tử HNO₃ lần lượt là:',
+                options: [
+                    { text: 'A. +5 và V.', isCorrect: false },
+                    { text: 'B. +5 và IV.', isCorrect: true },
+                    { text: 'C. +5 và III.', isCorrect: false },
+                    { text: 'D. +4 và IV.', isCorrect: false }
+                ],
+                rationale: 'Nitrogen ở chu kì 2 không có phân lớp d nên hóa trị (cộng hóa trị) tối đa chỉ bằng IV, còn số oxi hóa đạt cực đại là +5.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Đề số 3: KTGK1 Hóa 11',
+                question: 'Câu 24 [Đề 3]: Hóa chất nào sau đây thích hợp nhất để làm khô khí NH₃ có lẫn hơi nước?',
+                options: [
+                    { text: 'A. H₂SO₄ đặc.', isCorrect: false },
+                    { text: 'B. Vôi sống (CaO khan).', isCorrect: true },
+                    { text: 'C. P₂O₅.', isCorrect: false },
+                    { text: 'D. CuSO₄ khan.', isCorrect: false }
+                ],
+                rationale: 'NH₃ có tính base sẽ phản ứng với các chất làm khô có tính acid như H₂SO₄ đặc hay P₂O₅, do đó phải dùng chất hút ẩm có tính kiềm như CaO.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Đề số 3: KTGK1 Hóa 11',
+                question: 'Câu 25 [Đề 3]: Kim loại nào sau đây bị thụ động hóa trong dung dịch HNO₃ đặc, nguội nên có thể dùng làm bồn chứa acid này?',
+                options: [
+                    { text: 'A. Cu.', isCorrect: false },
+                    { text: 'B. Ag.', isCorrect: false },
+                    { text: 'C. Fe (hoặc Al, Cr).', isCorrect: true },
+                    { text: 'D. Zn.', isCorrect: false }
+                ],
+                rationale: 'Fe, Al, Cr bị thụ động hóa trong HNO₃ đặc nguội do tạo màng oxit bền bảo vệ bề mặt.'
+            },
+
+            // ==================== CÂU HỎI TÍNH TOÁN & ĐIỀN KHUYẾT (TỰ LUẬN CHUYỂN THÀNH TRẢ LỜI NGẮN) ====================
+            {
+                type: 'sa', level: 'VD', lesson: 'Bài toán pH & Nồng độ',
+                question: 'Câu 26 [Đề 1 - Tự luận]: Tính giá trị pH của dung dịch HCl nồng độ 0,01 M.',
+                correctAnswer: '2',
+                rationale: 'HCl là acid mạnh phân li hoàn toàn: [H⁺] = 0,01 M = 10⁻² M ⇒ pH = -log(10⁻²) = 2.'
+            },
+            {
+                type: 'sa', level: 'VD', lesson: 'Bài toán pH & Nồng độ',
+                question: 'Câu 27 [Đề 1 - Tự luận]: Tính giá trị pH của dung dịch Ba(OH)₂ nồng độ 0,005 M.',
+                correctAnswer: '12',
+                rationale: '[OH⁻] = 2 × 0,005 = 0,01 M = 10⁻² M ⇒ pOH = 2 ⇒ pH = 14 - 2 = 12.'
+            },
+            {
+                type: 'sa', level: 'VDC', lesson: 'Bài toán Năng lượng phản ứng',
+                question: 'Câu 28 [Đề 1 - Tự luận]: Cho phản ứng N₂(g) + 3H₂(g) ⇌ 2NH₃(g). Cho Eb(N≡N) = 945 kJ/mol, Eb(H-H) = 436 kJ/mol, Eb(N-H) = 386 kJ/mol. Tính biến thiên enthalpy chuẩn ΔrH°₂₉₈ (kJ) của phản ứng.',
+                correctAnswer: '-93',
+                rationale: 'ΔrH°₂₉₈ = Eb(N≡N) + 3Eb(H-H) - 6Eb(N-H) = 945 + 3(436) - 6(386) = -93 kJ.'
+            },
+            {
+                type: 'sa', level: 'VDC', lesson: 'Bài toán Cân bằng hóa học',
+                question: 'Câu 29 [Đề 2 - Tự luận]: Bình 1 lít chứa 1 mol N₂ và 4 mol H₂. Nung bình ở nhiệt độ cao thu được hỗn hợp khí cân bằng trong đó NH₃ chiếm 25% thể tích. Tính hằng số cân bằng Kc của phản ứng.',
+                correctAnswer: '0,128',
+                rationale: 'Đặt x là nồng độ N₂ phản ứng ⇒ 2x/(5 - 2x) = 0,25 ⇒ x = 0,5 M. Tại cân bằng: [NH₃] = 1,0 M; [N₂] = 0,5 M; [H₂] = 2,5 M. Kc = (1,0)² / (0,5 × 2,5³) = 0,128.'
+            },
+            {
+                type: 'sa', level: 'VDC', lesson: 'Bài toán Hiệu suất tổng hợp NH₃',
+                question: 'Câu 30 [Đề 3 - Tự luận]: Thực hiện phản ứng tổng hợp ammonia từ N₂ và H₂ (tỉ lệ mol 1 : 4) trong bình kín. Sau một thời gian, tổng số mol khí giảm 9% so với lượng khí ban đầu. Tính hiệu suất (%) của phản ứng.',
+                correctAnswer: '22,5',
+                rationale: 'Chọn ban đầu 1 mol N₂ và 4 mol H₂ (tổng 5 mol). Hiệu suất tính theo N₂. Δn = 2x = 9% × 5 = 0,45 mol ⇒ x = 0,225 mol. Hiệu suất H = (0,225 / 1) × 100% = 22,5%.'
+            }
+        ];
+
+        let questions = [];
+        let participants = [];
+        let gameMode = 'group';
+        let currentIndex = 0;
+        let currentQuestionIndex = 0;
+
+        function setGameMode(mode) {
+            gameMode = mode;
+            const btnGroup = document.getElementById('btn-mode-group');
+            const btnSingle = document.getElementById('btn-mode-single');
+            const subtitle = document.getElementById('setup-subtitle');
+            const container = document.getElementById('participant-inputs');
+            const addTeamBox = document.getElementById('add-team-box');
+
+            if (mode === 'group') {
+                btnGroup.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-lg transition flex items-center space-x-2";
+                btnSingle.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2";
+                subtitle.innerText = "Thiết lập thông tin các đội chơi";
+                addTeamBox.style.display = 'flex';
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</span>
+                        <input type="text" value="Đội 1" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</span>
+                        <input type="text" value="Đội 2" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                `;
+            } else {
+                btnSingle.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-teal-600 text-white shadow-lg transition flex items-center space-x-2";
+                btnGroup.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2";
+                subtitle.innerText = "Nhập họ và tên học sinh làm bài";
+                addTeamBox.style.display = 'none';
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-teal-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" value="Học sinh" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-teal-500 font-semibold text-sm" placeholder="Họ và tên của bạn...">
+                    </div>
+                `;
+            }
+        }
+
+        function addParticipantInput() {
+            const container = document.getElementById('participant-inputs');
+            const count = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            const colorClass = count % 2 === 0 ? 'bg-purple-600' : 'bg-blue-600';
+            div.innerHTML = `
+                <span class="${colorClass} w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">${count}</span>
+                <input type="text" value="Đội ${count}" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-300 px-2"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function startGame() {
+            getAudioContext();
+
+            const inputs = document.querySelectorAll('.participant-input');
+            participants = [];
+            inputs.forEach((input, index) => {
+                const name = input.value.trim() || (gameMode === 'group' ? `Đội ${index + 1}` : `Học sinh`);
+                participants.push({ name: name, score: 0, correctCount: 0 });
+            });
+
+            if (participants.length === 0) {
+                alert("Vui lòng nhập tên người làm bài!");
+                return;
+            }
+
+            questions = [...originalQuestions].sort(() => Math.random() - 0.5);
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('total-q-num').innerText = questions.length;
+            
+            if (gameMode === 'single') {
+                document.getElementById('turn-label').innerText = 'Học sinh:';
+            } else {
+                document.getElementById('turn-label').innerText = 'Lượt của:';
+            }
+
+            currentIndex = 0;
+            currentQuestionIndex = 0;
+            loadQuestion();
+        }
+
+        function updateScoreboardMini() {
+            const container = document.getElementById('scoreboard-mini');
+            container.innerHTML = '';
+            
+            if (gameMode === 'single') {
+                container.style.display = 'none';
+                document.getElementById('current-participant-badge').innerText = participants[0].name;
+            } else {
+                container.style.display = 'grid';
+                participants.forEach((p, idx) => {
+                    const isCurrent = idx === currentIndex;
+                    const div = document.createElement('div');
+                    div.className = `p-2 rounded-lg border ${isCurrent ? 'border-teal-400 bg-teal-950/40 pulse-glow' : 'border-slate-700 bg-slate-900/40'}`;
+                    div.innerHTML = `
+                        <div class="text-xs text-slate-300 truncate font-semibold">${p.name}</div>
+                        <div class="text-lg font-extrabold text-teal-300">${p.score} đ</div>
+                    `;
+                    container.appendChild(div);
+                });
+                document.getElementById('current-participant-badge').innerText = participants[currentIndex].name;
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerHTML = q.question;
+
+            const typeText = q.type === 'mcq' ? 'Trắc nghiệm 4 lựa chọn' : q.type === 'tf' ? 'Câu hỏi Đúng / Sai' : 'Câu hỏi Trả lời ngắn';
+            document.getElementById('question-badge').innerText = `${q.lesson} • Cấp độ: ${q.level} • ${typeText}`;
+
+            updateScoreboardMini();
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            if (q.type === 'mcq') {
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+                let currentOptions = [...q.options].sort(() => Math.random() - 0.5);
+                const letters = ['A', 'B', 'C', 'D'];
+
+                currentOptions.forEach((opt, idx) => {
+                    const cleanText = opt.text.replace(/^[A-D]\.\s*/, '');
+                    const btn = document.createElement('button');
+                    btn.className = 'bg-slate-900/90 hover:bg-slate-700 border border-slate-700 hover:border-blue-500 p-4 rounded-xl text-left transition flex items-start space-x-3 group shadow';
+                    
+                    btn.innerHTML = `
+                        <span class="bg-slate-800 text-teal-400 font-bold px-2.5 py-1 rounded-lg text-sm shrink-0">${letters[idx]}</span>
+                        <span class="text-slate-100 font-medium text-sm md:text-base my-auto">${cleanText}</span>
+                    `;
+
+                    btn.onclick = () => selectAnswer(opt.isCorrect, q.rationale);
+                    gridDiv.appendChild(btn);
+                });
+                optionsContainer.appendChild(gridDiv);
+            } else if (q.type === 'sa') {
+                const boxDiv = document.createElement('div');
+                boxDiv.className = 'max-w-md mx-auto space-y-4 pt-2 text-center';
+                boxDiv.innerHTML = `
+                    <div class="text-xs text-slate-400">Nhập đáp án số (ví dụ: 2; 12; -93; 0,128; 22,5) rồi nhấn Xác nhận:</div>
+                    <div class="flex space-x-2">
+                        <input id="sa-input" type="text" class="w-full bg-slate-900 border border-teal-500 rounded-xl px-4 py-3 text-white text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-teal-400" placeholder="Nhập kết quả tính toán...">
+                        <button id="sa-submit-btn" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow transition">Gửi</button>
+                    </div>
+                `;
+                optionsContainer.appendChild(boxDiv);
+
+                const inputEl = document.getElementById('sa-input');
+                const submitBtn = document.getElementById('sa-submit-btn');
+
+                const handleSaSubmit = () => {
+                    const userAns = inputEl.value.trim().toLowerCase().replace(/\s+/g, '').replace(',', '.');
+                    const targetAns = q.correctAnswer.trim().toLowerCase().replace(/\s+/g, '').replace(',', '.');
+                    const isCorrect = (userAns === targetAns);
+                    selectAnswer(isCorrect, `${q.rationale} (Đáp án chuẩn: <b>${q.correctAnswer}</b>)`);
+                };
+
+                submitBtn.onclick = handleSaSubmit;
+                inputEl.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') handleSaSubmit();
+                });
+                setTimeout(() => inputEl.focus(), 100);
+            }
+
+            renderMath(document.getElementById('game-screen'));
+        }
+
+        function selectAnswer(isCorrect, rationaleText) {
+            document.getElementById('game-screen').classList.add('hidden');
+            const feedbackScreen = document.getElementById('feedback-screen');
+            feedbackScreen.classList.remove('hidden');
+
+            const title = document.getElementById('feedback-title');
+            const icon = document.getElementById('feedback-icon');
+            const rationale = document.getElementById('feedback-rationale');
+
+            if (isCorrect) {
+                playCorrectSound();
+                participants[currentIndex].score += 10;
+                participants[currentIndex].correctCount++;
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+                title.innerText = gameMode === 'single' ? "Chính Xác! (+10 điểm)" : `${participants[currentIndex].name} Trả Lời Chính Xác! (+10 điểm)`;
+                title.className = "text-2xl font-bold text-emerald-400";
+            } else {
+                playIncorrectSound();
+                if (gameMode === 'group') {
+                    participants[currentIndex].score = Math.max(0, participants[currentIndex].score - 5);
+                }
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-400"></i>';
+                title.innerText = gameMode === 'single' ? "Chưa Chính Xác!" : `${participants[currentIndex].name} Chưa Chính Xác! (-5 điểm)`;
+                title.className = "text-2xl font-bold text-red-400";
+            }
+
+            rationale.innerHTML = rationaleText;
+            renderMath(feedbackScreen);
+        }
+
+        function nextQuestion() {
+            if (gameMode === 'group') {
+                currentIndex = (currentIndex + 1) % participants.length;
+            }
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                document.getElementById('feedback-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('feedback-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+
+            const container = document.getElementById('final-scoreboard');
+            container.innerHTML = '';
+
+            if (gameMode === 'single') {
+                const student = participants[0];
+                document.getElementById('end-subtitle').innerText = `Học sinh: ${student.name}`;
+                
+                const score10 = ((student.correctCount / questions.length) * 10).toFixed(1);
+
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900 border border-teal-500 p-6 rounded-2xl space-y-3 text-center';
+                div.innerHTML = `
+                    <div class="text-slate-400 text-sm">Tổng số câu đúng: <b class="text-white">${student.correctCount} / ${questions.length}</b></div>
+                    <div class="text-4xl font-extrabold text-teal-300">${score10} <span class="text-xl font-bold text-slate-300">/ 10 Điểm</span></div>
+                    <div class="text-xs text-slate-400 pt-2">${Number(score10) >= 8 ? '🌟 Xuất sắc! Bạn nắm rất vững kiến thức ôn tập Hóa học 11 Giữa kì 1.' : Number(score10) >= 5 ? '👍 Khá tốt! Hãy rà soát lại các bài toán cân bằng và pH nhé.' : '📖 Hãy ôn tập kĩ lại lý thuyết cân bằng, acid-base và hợp chất nitrogen nhé!'}</div>
+                `;
+                container.appendChild(div);
+            } else {
+                document.getElementById('end-subtitle').innerText = "Trò chơi đã kết thúc! Tổng kết điểm số các đội chơi.";
+                const sortedList = [...participants].sort((a, b) => b.score - a.score);
+                sortedList.forEach((p, idx) => {
+                    const div = document.createElement('div');
+                    div.className = `flex justify-between items-center p-4 rounded-xl border ${idx === 0 ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold' : 'bg-slate-900 border-slate-700 text-white'}`;
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full flex items-center justify-center font-bold ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">${idx + 1}</span>
+                            <span>${p.name}</span>
+                        </div>
+                        <span class="text-xl font-extrabold">${p.score} điểm</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            confetti({
+                particleCount: 160,
+                spread: 85,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function restartGame() {
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMath(document.body);
+        });
+    </script>
+</body>
+</html>
